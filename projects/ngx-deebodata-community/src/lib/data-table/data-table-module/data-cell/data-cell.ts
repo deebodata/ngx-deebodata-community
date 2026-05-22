@@ -106,7 +106,7 @@ export class DataCellComponent {
       cell.textContent = this.cell.text
     if(this.cell.html && !cell.innerHTML){
       cell.innerHTML = this.cell.html
-      if(/[A-Za-z0-9][ ]?\<a/g.test(this.cell.html) || /a\>[ ]?[A-Za-z0-9]/g.test(this.cell.html))
+      if(/ \<a/g.test(this.cell.html) || /a\> /g.test(this.cell.html))
         cell.style.display = "inline-block"
     }
     this.ready = true

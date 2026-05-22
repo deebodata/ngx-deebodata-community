@@ -1,6 +1,6 @@
 # NgxDeebodataCommunity
 
-Open-source data grid with virtual scroll, column resizing, cell editing, tab accessibility, row selection, sorting, and filtering.
+Angular data grid with virtual scroll, column resizing, cell editing, tab accessibility, row selection, sorting, and filtering.
 
 ## Usage
 
