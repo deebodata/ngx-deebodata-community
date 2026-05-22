@@ -1,0 +1,47 @@
+<div #colHeader [id]="'columnHeader' + elCol" class="col-header" (dblclick)="handleColResDblClick(columnHeader.column)"
+[ngClass]="{ 'col-item-freeze': columnHeader.freeze, }"
+[ngStyle]="{'width': columnHeader.width, 'height': columnHeader.height, 'lineHeight': columnHeader.lineHeight}"
+(mousedown)="tblDragService.handleHeaderSizeAdjust($event)" (mouseup)="tblDragService.handleColResMouseUp($event)"
+(mousemove)="tblDragService.checkItemBorderCursor($event)" (mousemove)="tblDragService.handleHeaderSizeAdjust($event)">
+    <span (mousemove)="common.unbindMouseEvent($event)" (mousedown)="common.unbindMouseEvent($event)" (mouseup)="common.unbindMouseEvent($event)"
+    (click)="doSortOnClick($event, columnHeader.column)" [class.span-disabled]="dataTableService.isSorting">{{text}}</span>
+    <button [id]="'btnSort' + elCol" type="button" [disabled]="dataTableService.isSorting" (click)="doSortOnClick($event, columnHeader.column)" class="data-sort-arr"
+    (mousemove)="common.unbindMouseEvent($event)" (mousedown)="preventTabScroll()" (mouseup)="common.unbindMouseEvent($event)"
+    (focus)="emitTabFocus(elCol)">
+        <i class="material-icons v-mid">{{dataTableService.dataFilSrtTracker[columnHeader.column].sort === "asc" ? "arrow_downward" : "arrow_upward"}}</i>
+    </button>
+    @if(dataTableService.sortOrder.indexOf(columnHeader.column) > -1){
+        <sup [class.prevent]="dataTableService.isSorting" (click)="doSortOnClick($event, columnHeader.column)" 
+         (mousemove)="common.unbindMouseEvent($event)" (mousedown)="common.unbindMouseEvent($event)" (mouseup)="common.unbindMouseEvent($event)" 
+         class="sort-order-indicator">{{(dataTableService.sortOrder.indexOf(columnHeader.column)+1) | number}}</sup>
+    }
+    @if(canFreeze){
+        <button type="button" (click)="freezeColOnClick($event, columnHeader.column)" class="btn-freeze-col"
+        (mousemove)="common.unbindMouseEvent($event)" (mousedown)="common.unbindMouseEvent($event)" (mouseup)="common.unbindMouseEvent($event)" >
+            <i class="material-icons">featured_play_list</i>
+        </button>
+    }
+    <br>
+    @if(dataTableService.dataFilSrtTracker[columnHeader.column].filter){
+        <button type="button" class="btn-x-filter" (click)="resetColFilter($event, columnHeader.column)" 
+        (mousemove)="common.unbindMouseEvent($event)" (mousedown)="common.unbindMouseEvent($event)" (mouseup)="common.unbindMouseEvent($event)" >&times;</button>
+    }
+    <input #filterInput [name]="'filter' + elCol" [id]="'filter' + elCol"
+    (input)="filterOnKeyUp($event, columnHeader.column, $any($event).target.value)" maxlength="255" autocomplete="off" 
+    (keyup)="filterOnKeyUp($event, columnHeader.column, $any($event).target.value)" [attr.type]="columnHeader.dataType" 
+    (mousemove)="common.unbindMouseEvent($event)" (mousedown)="common.unbindMouseEvent($event)" (mouseup)="common.unbindMouseEvent($event)" />
+    <select #compSelect [id]="'selectComp' + elCol" [name]="'selectComp' + elCol" [(ngModel)]="dataTableService.dataFilSrtTracker[columnHeader.column].comparator" 
+    (change)="handleComparatorChange(columnHeader.column, $any($event).target.value)" class="select-filter-comparator"
+    (mousemove)="common.unbindMouseEvent($event)" (mousedown)="common.unbindMouseEvent($event)" (mouseup)="common.unbindMouseEvent($event)" >
+        <option value="">Comparison?</option>
+        @for(opt of compOpts; track opt){
+            <option [value]="opt" >{{opt}}</option>
+        }
+    </select>
+    <div class="inline relly" style="z-index: 1;">
+        <button class="btn-fil-comp" type="button"
+        (mousemove)="common.unbindMouseEvent($event)" (mousedown)="common.unbindMouseEvent($event)" (mouseup)="common.unbindMouseEvent($event)" >
+            <i class="material-icons" aria-hidden="false">filter_list</i>
+        </button>
+    </div>
+</div>

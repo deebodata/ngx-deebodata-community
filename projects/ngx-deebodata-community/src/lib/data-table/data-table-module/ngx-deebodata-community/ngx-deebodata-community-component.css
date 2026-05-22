@@ -1,0 +1,75 @@
+:host{
+    --accent-color:rgb(50, 50, 50);
+    --grid-color:rgb(199, 199, 199);
+    --pad-left-base: 33px;
+    --row-num-width: 75px;
+    --reg-font-size: 17px
+}
+
+input[name=topLevelDataFilter]{
+    float: left;
+    padding: 7px 5px;
+    vertical-align: middle;
+    box-shadow: 0 0 1px 1px var(--grid-color);
+    -moz-box-shadow: 0 0 1px 1px var(--grid-color);
+    -webkit-box-shadow: 0 0 1px 1px var(--grid-color);
+}
+
+.deebo-dd-contain-div{
+    margin: 0 31px;
+}
+
+.dt-checks{
+    margin-left: var(--row-num-width);
+}
+
+.row-numbers{
+    margin-top: 11px;
+    display: inline-block;
+    width: var(--row-num-width);
+}
+
+.row-num-header{
+    background: #e9e9e9;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--accent-color);
+    border-right: 1px solid var(--accent-color);
+    box-shadow:0 -1px 3px 1px var(--grid-color);
+    -moz-box-shadow:0 -1px 3px 1px var(--grid-color);
+    -webkit-box-shadow:0 -1px 3px 1px var(--grid-color)
+}
+
+.num-row{
+    white-space:nowrap;
+    box-sizing:border-box;
+    border-left: 1px solid var(--grid-color);
+    border-bottom: 1px solid var(--grid-color);
+}
+
+.inline-table{
+    display: inline-block;
+    width: calc(100% - var(--row-num-width));
+}
+
+.special-edit-container{
+    z-index: 5;
+}
+
+.edit-input{
+    border: none;
+    font-size: 15px;
+    box-shadow:none;
+    position: absolute;
+    background: white;
+    -moz-box-shadow:none;
+    -webkit-box-shadow: none;
+    box-sizing: border-box;
+}
+
+.edit-input[type=number]{
+    text-align: right;
+}
+
+.edit-input[type=date]{
+    padding-left: 17px;
+}
