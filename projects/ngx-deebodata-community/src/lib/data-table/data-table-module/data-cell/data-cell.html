@@ -1,0 +1,6 @@
+<div #cellEl [attr.contenteditable]="canEdit" [ngStyle]="cellStyle" class="data-cell data-cell-{{elCol}}{{rightAlign}}{{symbolCls}}" 
+[ngClass]="{ 'col-item-freeze': cell.freeze, 'holding-check': cell.column === dataTableService.firstCol }" tabindex="0"
+(mousemove)="tblDragService.checkItemBorderCursor($event, noColResize)" (mousemove)="tblDragService.handleCellSizeAdjust($event, elCol)"
+(mousedown)="tblDragService.handleCellSizeAdjust($event, elCol)" (focus)="setCellToEdit()" (blur)="emitEdit($event)"
+[attr.data-index]="rowId" (dblclick)="handleColResDblClick(cell.column)" (keydown.tab)="checkNeedsSroll()"
+></div>

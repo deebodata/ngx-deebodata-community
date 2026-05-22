@@ -1,0 +1,15 @@
+<div style="margin: 0 auto; width: 97%;">
+    <ngx-deebodata-community
+    [editable]="true"
+    [rowNumbers]="true"
+    [data]="data()"
+    [color1]="'navy'"
+    [color2]="'lightblue'"
+    [primaryKey]="'employee_id'"
+    [defRowHgt]="'50px'"
+    [defGridHgt]="500"
+    [altRowColor]="''"
+    [myColumnSymbols]="symbols"
+    (cellEdit)="handleCellEdit($event)"
+    ></ngx-deebodata-community>
+</div>

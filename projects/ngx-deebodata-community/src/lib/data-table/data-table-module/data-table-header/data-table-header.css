@@ -1,0 +1,19 @@
+.btn-x-filter{
+    padding: 0;
+    float: left;
+    border: none;
+    color: maroon;
+    background: none;
+    font-weight: 600;
+    font-size: x-large;
+    line-height: 16px;
+    margin: 17px 0 0 3px;
+}
+
+.btn-x-filter:hover{
+    background: #fdf3f3;
+}
+
+.span-disabled{
+    opacity: 0.5;
+}

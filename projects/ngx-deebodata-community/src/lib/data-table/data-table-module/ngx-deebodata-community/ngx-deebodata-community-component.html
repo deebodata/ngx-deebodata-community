@@ -1,0 +1,106 @@
+<div class="deebo-data-grid-section">
+    <div class="controls">
+        <input type="text" #topLevelDataFilter autocomplete="off" name="topLevelDataFilter" placeholder="Filter any column..." 
+        (input)="topFilterOnKeyUp($event)" (keyup)="topFilterOnKeyUp($event)" maxlength="255" [(ngModel)]="topLevelFilter" 
+        [disabled]="!dataTableService.mainData.length || handlingSelRows" autocomplete="off" />
+        <button type="button" [disabled]="!dataTableService.currSelRows.length || handlingSelRows" (click)="clearSelectedRows()" class="btn-ctrl-sel-rows">Deselect Rows</button>
+        <button #btnTogSelRows type="button" [disabled]="!dataTableService.currSelRows.length || handlingSelRows" (click)="toggleSelectedRows()" class="btn-ctrl-sel-rows">
+            <i class="material-icons" aria-hidden="false">check_box_outline_blank</i>&nbsp;<span>{{togSelRows}}</span>
+        </button>
+        <button [disabled]="!topLevelFilter && dataTableService.arefilSrtTrkPropsDefault()" 
+        class="btn-reset" (click)="resetCurrentData()" >Reset</button>
+    </div>
+    <div class="relly" [ngClass]="{'dt-checks': rowNumbers, 'hide' : dataTableService.isFiltering || 
+    dataTableService.isSorting }">
+        @for (chk of dtChecks; track $index) {
+            <input [id]="'checkDataTableRow' + chk" class="select-row-check invisible" 
+            [checked]="dataTableService.currSelRows.indexOf(chk) > -1" type="checkbox" [name]="'checkDataTableRow' + chk"
+            (click)="toggleSingleRowSelected(chk)" (keyup.enter)="toggleSingleRowSelected(chk)" [value]="'dataTableRow' + chk" >
+        }
+    </div>
+    <div #validatedEdit class="relly special-edit-container invisible">
+        @if (validatedEditType === 'date'){
+            <input id="selEditDate" name="selEditDate" type="date" class="edit-input" 
+            (change)="execCellEdit($event, true)" (input)="execCellEdit($event, true)" (blur)="execCellEdit($event)" />
+        }
+        @if (validatedEditType === 'number'){
+            <input id="selEditNum" name="selEditNum" type="number" class="edit-input" 
+            (keyup)="execCellEdit($event, true)" (input)="execCellEdit($event, true)" (blur)="execCellEdit($event)" (keyup.enter)="execCellEdit($event)" />
+        }
+    </div>
+    <div class="relly" style="z-index: 6;">
+        <div #fCellDragger tabindex="0" id="fCellDragger" (focus)="focusCellDragger()" (blur)="execValClear(true)"
+        (mousedown)="focusCellDraggerFromMouseDown()" (keydown)="handleFDragTab($event)" (keydown)="handleDraggerKD($event)"
+        [ngClass]="{'hide': dataTableService.currEditIndex < 0, 'focused-cell-dragger': dataTableService.currEditIndex > -1 }"></div>
+    </div>
+    <div [ngClass]="{'row-numbers': rowNumbers, 'hide': !rowNumbers}" >
+        <div #rowNumHeader class="row-num-header flex-center"><div class="semi-heavy">No.</div></div>
+        <div style="overflow: hidden;" [style.height]="dataTableService.dTblHeight + 'px'">
+            <div #rowNumBody style="overflow: auto">
+                @for (num of rowNos; track num.number) {
+                    <div [id]="'rn' + num.number" class="flex-center num-row" [style.height]="num.height || dataTableService.defltRHgt">
+                        <div class="small-text">{{num.number | number}}</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div><div #dataTable class="data-table" [class.inline-table]="rowNumbers">
+        <div #dataTableHeaders class="data-table-headers">
+            @for (col of columnHeaders; track col.column; let i = $index) {
+                <app-data-table-header
+                [columnHeader]="col"
+                [colWid]="dataTableService.useColWid"
+                [canFreeze]="i === 0 ? true : false"
+                (reset)="resetCurrentData($event)"
+                (freeze)="freezeColCells($event)"
+                (scrollOnFocus)="checkTabHorizScroll($event)"
+                (height)="setHeaderHeight($event, true)"
+                (render)="renderCurrData(false, $event.field)"
+                (width)="handleSingleColResize($event.value, $event.column)"
+                ></app-data-table-header>
+            }
+        </div>
+        <div #dataTableBody id="dataTableBody" style="overflow: auto;" [style.height]="dataTableService.dTblHeight + 'px'" (scroll)="handleScroll($event)"
+        [class.table-working]="dataTableService.isFiltering || dataTableService.isSorting" (scrollend)="handleScrollEnd()">
+            <div #aboveArea [style.height]="aboveHgt() + 'px'"></div>
+            @for(row of rows; track row.index){
+                <div [id]="row.id" class="data-table-row" [attr.data-index]="row.index"
+                [class.data-row-selected]="!dataTableService.displayOnlySelRows && dataTableService.currSelRows.indexOf(row.index) > -1"
+                 [ngStyle]="{'width': row.width, 'height': row.height}" >
+                    @for(cell of row.cells; track cell.column){
+                        @if (isScrolling){
+                            <div class="data-cell data-cell-{{common.elifyCol(cell.column)}}" [class.data-cell-riiight]="cell.dataType === 'number'"
+                            [ngClass]="{ 'col-item-freeze': cell.freeze, 'holding-check': cell.column === dataTableService.firstCol }"
+                            [ngStyle]="{'width': cell.width || dataTableService.useColWid, 'height': row.height}" >{{cell.text}}@if (cell.html){<div class="mock-html"></div>}</div>
+                        } @else {
+                            <app-data-cell [cell]="cell" 
+                            [rowId]="row.id" 
+                            [rawText]="cell.rawText"
+                            [rowHeight]="row.height || ''"
+                            (edit)="execCellEdit($event)"
+                            (dragListen)="listenToCellDraggerMouseMove = $event"
+                            [colWid]="cell.width || dataTableService.useColWid"
+                            (width)="handleSingleColResize($event)"
+                            (height)="setSingleRowHgt($event, row.id, true)"
+                            (clearVEditFocus)="validatedEditType = $event"
+                            (validateEditFocus)="handleValidatedCellEditFocus($event)"
+                            ></app-data-cell>
+                        }
+                    }
+                </div>
+            }
+            <div #belowArea [style.height]="belowHgt() + 'px'"></div>
+            @if(!dataTableService.currFilData.length){
+                <div [style.height]="dataTableService.dTblHeight + 'px'" class="data-table-row flex-center data-table-row-no-data" style="width: 100%; white-space: normal;">
+                    <div class="center">{{dataTableService.noDataMsg}}</div>
+                </div>
+            }
+        </div>
+    </div>
+    @if(paginatorReady){
+        <app-data-table-paginator
+        [filSortStr]="allFilSortInfo"
+        [totalRows]="dataTableService.currFilData.length"
+        ></app-data-table-paginator><!--not an actual paginator-->
+    }
+</div>

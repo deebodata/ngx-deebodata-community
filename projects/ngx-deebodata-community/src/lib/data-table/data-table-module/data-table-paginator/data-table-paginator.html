@@ -1,0 +1,10 @@
+<div id="tableFooter" class="data-table-footer" (mousemove)="tblDragService.checkPaginatorBorderCursor($event)" 
+(mousemove)="tblDragService.handleTableHeightAdjust($event)" (mousedown)="tblDragService.handleTableHeightAdjust($event)" 
+(mouseup)="tblDragService.handleColResMouseUp($event)">
+    <div class="three-qtr-wid">
+        <div class="inline v-mid semi-heavy lg-text">{{totalRowStr}}</div>&nbsp;<div class="inline v-mid">row{{totalRows === 1 ? "" : "s"}}</div>
+        @if(filSortStr){
+            <div class="inline v-mid" [innerHTML]="filSortStr"></div>
+        }
+    </div>
+</div>
