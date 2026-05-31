@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, input, Input, Output, signal, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, input, Input, Output, signal, SimpleChanges, ViewChild } from '@angular/core';
 import { ColumnHeader } from '../../../interfaces/column-header';
 import { CommonService } from '../../../services/common-service';
 import { TableDragService } from '../../../services/table-drag-service';
@@ -81,7 +81,8 @@ export class NgxDeebodataCommunity {
 
     constructor(public dataTableService: DataTableService, 
                 private tblDragService: TableDragService,
-                public common: CommonService,) {
+                public common: CommonService,
+                private _cd: ChangeDetectorRef,) {
   
       }
 
@@ -143,8 +144,10 @@ export class NgxDeebodataCommunity {
       }
 
       ngOnInit() {
-        if(this.defRowHgt && /\d+px/g.test(this.defRowHgt))
+        if(this.defRowHgt){
             this.dataTableService.defltRHgt = this.defRowHgt
+            this.dataTableService.defltRHgtNum = parseInt(this.defRowHgt.replace(/[ ]?(px|vh|\%)/g, ""));
+        }
         if(this.defGridHgt)
             this.dataTableService.dTblHeight = this.defGridHgt
         if(this.myColumnSymbols)
@@ -623,8 +626,7 @@ export class NgxDeebodataCommunity {
 
         setLastRowIndex() {
             const realMax = this.dataTableService.currFilData.length - 1
-            const defNum = parseInt(this.dataTableService.defltRHgt.replace(/[ ]?px/g, ""))
-            const wannabeMax = (this.rows.length - 1) + Math.floor(this.aboveHgt()/defNum)
+            const wannabeMax = (this.rows.length - 1) + Math.floor(this.aboveHgt()/this.dataTableService.defltRHgtNum)
             this.lastElRowIndex = Math.min(wannabeMax, realMax)
             return this.lastElRowIndex;
         }
@@ -636,7 +638,7 @@ export class NgxDeebodataCommunity {
               const len = data.length;
               const colLen = cols.length
               this.maxCols = this.setMaxCols()
-              const defNum = parseInt(this.dataTableService.defltRHgt.replace(/[ ]?px/g, ""))
+              const defNum = this.dataTableService.defltRHgtNum
               const init = Math.max(this.dataTableService.dTblHeight/defNum);
               this.dataTableService.useColWid = Math.ceil((this.dataTableBody.nativeElement.getBoundingClientRect().width-16)/Math.min(colLen, this.maxCols)) + "px"
               for(i; i < colLen; i++){
@@ -816,7 +818,7 @@ export class NgxDeebodataCommunity {
           const left = event.target.scrollLeft
           /*horiz scroll*/
           if(left !== this.horizRest)
-            requestAnimationFrame( () => { this.execHorizScroll(left) })
+            this.execHorizScroll(left)
           /*horiz scroll*/
           /*vert scroll*/
           if(top === this.verticalRest || this.lockVScroll){
@@ -826,7 +828,7 @@ export class NgxDeebodataCommunity {
               return this.setRowSelChecksPlacement()
           }
           this.isScrolling = true
-          requestAnimationFrame( () => { this.execVertScroll(top) })
+          this.execVertScroll(top)
           /*vert scroll*/
           if(top%2===0)
             this.clearValidatedEdit()
@@ -870,7 +872,7 @@ export class NgxDeebodataCommunity {
             this.setRowSelChecksPlacement()
             if(this.listenToCellDraggerMouseMove)
                 this.settleCellDragger()
-            setTimeout( () => { this.cleanUpPossibles() })
+            setTimeout( () => { this.cleanUpPossibles(); this._cd.detectChanges() })
         })
     }
 
@@ -983,13 +985,10 @@ export class NgxDeebodataCommunity {
         const bbds = bel.getBoundingClientRect()
         const rTop = (bbds.top - this.verticalRest)
         const gap = this.dataTableService.tblBot - rTop
-        const defNum = parseInt(this.dataTableService.defltRHgt.replace(/[ ]?px/g, ""))
+        const defNum = this.dataTableService.defltRHgtNum
         if(gap > 0){
             let h = 0
             let z = this.lastElRowIndex + 1
-            const last = document.getElementById("dataTableRow" + this.lastElRowIndex)
-            if(last && this.dataTableService.elIsBelowFold(last, this.dataTableService.tblBot))
-                return;
             let bhToSub = 0
             let ahToAdd = 0
             const rowsInGap = Math.ceil(gap/defNum)
@@ -1025,13 +1024,13 @@ export class NgxDeebodataCommunity {
                 }
                 h += 1
             }
-            this.rows = [...this.rows, ...rowsToAdd]
             if(bhToSub)
                 this.belowHgt.set(Math.max(0, (this.belowHgt() - bhToSub)))
-            if(chksToAdd.length)
-                this.dtChecks= [...this.dtChecks, ...chksToAdd]
+            this.rows = [...this.rows, ...rowsToAdd]
             if(ahToAdd)
                 this.aboveHgt.set(this.aboveHgt() + ahToAdd)
+            if(chksToAdd.length)
+                this.dtChecks= [...this.dtChecks, ...chksToAdd]
             this.setLastRowIndex()
         }
     }
@@ -1042,7 +1041,7 @@ export class NgxDeebodataCommunity {
         const lastVisInd = actvCols.indexOf(this.dataTableService.visibleCols[(vlen-1)]) + 1;
         const ael = this.aboveArea.nativeElement
         const abds = ael.getBoundingClientRect()
-        const defNum = parseInt(this.dataTableService.defltRHgt.replace(/[ ]?px/g, ""))
+        const defNum = this.dataTableService.defltRHgtNum
         const rbot = abds.bottom
         const gap = rbot - (this.dataTableService.tblTop)
         if(gap > 0){
@@ -1053,6 +1052,8 @@ export class NgxDeebodataCommunity {
                 return
             let bhToAdd = 0
             let ahToSub = 0
+            let mRows = [...this.rows]
+            let mChks = [...this.dtChecks]
             const rowsInGap = Math.ceil(gap/defNum)
             const min = Math.max(0, (z-rowsInGap))
             for(z; z >= min; z--){
@@ -1076,8 +1077,8 @@ export class NgxDeebodataCommunity {
                                     cells.push(cell)
                             }
                             nRow.cells = [...cells]
-                            this.rows = [nRow, ...this.rows]
-                            this.dtChecks = [index, ...this.dtChecks]
+                            mRows = [nRow, ...mRows]
+                            mChks = [index, ...mChks]
                             ahToSub += defNum
                         }
                     }
@@ -1086,8 +1087,10 @@ export class NgxDeebodataCommunity {
             }
             if(ahToSub)
                 this.aboveHgt.set(Math.max(0, (this.aboveHgt() - ahToSub)))
+            this.rows = [...mRows]
             if(bhToAdd)
                 this.belowHgt.set(this.belowHgt() + bhToAdd)
+            this.dtChecks = [...mChks]
         }
     }
 
@@ -1097,12 +1100,11 @@ export class NgxDeebodataCommunity {
         const justindx = els.map( e => e.index)
         const changes = justids.length
         if(changes > 0){
-            const defNum = parseInt(this.dataTableService.defltRHgt.replace(/[ ]?px/g, ""))
             this.rows = this.rows.filter( r => !justids.includes(r.id))
             this.dtChecks = this.dtChecks.filter( c => !justindx.includes(c))
             const item = this.dataTableService.mainData[(this.rows[0]?.index || -1)]
             if(item)
-                this.aboveHgt.set(Math.max(0, this.dataTableService.findObjIndxInData(item, this.dataTableService.currFilData)*defNum))
+                this.aboveHgt.set(Math.max(0, this.dataTableService.findObjIndxInData(item, this.dataTableService.currFilData)*this.dataTableService.defltRHgtNum))
         }
     }
 
@@ -1112,25 +1114,13 @@ export class NgxDeebodataCommunity {
         const justindx = els.map( e => e.index)
         let changes = justids.length
         if(changes > 0){
-            const defNum = parseInt(this.dataTableService.defltRHgt.replace(/[ ]?px/g, ""))
             this.rows = this.rows.filter( r => !justids.includes(r.id))
             this.dtChecks = this.dtChecks.filter( c => !justindx.includes(c))
             const rlen = this.rows.length
             const item = this.dataTableService.mainData[(this.rows[(rlen-1)]?.index || -1)]
             if(item)
-                this.belowHgt.set(Math.max(0, ((this.dataTableService.currFilData.length-1)-this.dataTableService.findObjIndxInData(item, this.dataTableService.currFilData))*defNum))
+                this.belowHgt.set(Math.max(0, ((this.dataTableService.currFilData.length-1)-this.dataTableService.findObjIndxInData(item, this.dataTableService.currFilData))*this.dataTableService.defltRHgtNum))
             this.setLastRowIndex()
-        }
-    }
-
-    jumpToRow(row: number) {
-        if(this.dataTableBody){
-            const ind = row - 1
-            const tbl = this.dataTableBody.nativeElement
-            const defNum = parseInt(this.dataTableService.defltRHgt.replace(/[ ]?px/g, ""))
-            tbl.scrollTop = ind*defNum
-            this.execVertScroll(tbl.scrollTop)
-            setTimeout( () => { this.setRowSelChecksPlacement() })
         }
     }
 
@@ -1590,7 +1580,7 @@ export class NgxDeebodataCommunity {
         }
         this.lastElRowIndex = 0
         let n = 0
-        const defNum = parseInt(this.dataTableService.defltRHgt.replace(/[ ]?px/g, ""))
+        const defNum = this.dataTableService.defltRHgtNum
         const init = Math.max(this.dataTableService.dTblHeight/defNum);
         const len = this.dataTableService.currFilData.length;
         if(!len){//always just add 1

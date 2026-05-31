@@ -10,14 +10,16 @@
         <button [disabled]="!topLevelFilter && dataTableService.arefilSrtTrkPropsDefault()" 
         class="btn-reset" (click)="resetCurrentData()" >Reset</button>
     </div>
-    <div class="relly" [ngClass]="{'dt-checks': rowNumbers, 'hide' : dataTableService.isFiltering || 
-    dataTableService.isSorting }">
-        @for (chk of dtChecks; track $index) {
-            <input [id]="'checkDataTableRow' + chk" class="select-row-check invisible" 
-            [checked]="dataTableService.currSelRows.indexOf(chk) > -1" type="checkbox" [name]="'checkDataTableRow' + chk"
-            (click)="toggleSingleRowSelected(chk)" (keyup.enter)="toggleSingleRowSelected(chk)" [value]="'dataTableRow' + chk" >
-        }
-    </div>
+    @if (!isScrolling){
+        <div class="relly" [ngClass]="{'dt-checks': rowNumbers, 'hide' : dataTableService.isFiltering || 
+        dataTableService.isSorting }">
+            @for (chk of dtChecks; track $index) {
+                <input [id]="'checkDataTableRow' + chk" class="select-row-check invisible" 
+                [checked]="dataTableService.currSelRows.indexOf(chk) > -1" type="checkbox" [name]="'checkDataTableRow' + chk"
+                (click)="toggleSingleRowSelected(chk)" (keyup.enter)="toggleSingleRowSelected(chk)" [value]="'dataTableRow' + chk" >
+            }
+        </div>
+    }
     <div #validatedEdit class="relly special-edit-container invisible">
         @if (validatedEditType === 'date'){
             <input id="selEditDate" name="selEditDate" type="date" class="edit-input" 
@@ -69,9 +71,8 @@
                  [ngStyle]="{'width': row.width, 'height': row.height}" >
                     @for(cell of row.cells; track cell.column){
                         @if (isScrolling){
-                            <div class="data-cell data-cell-{{common.elifyCol(cell.column)}}" [class.data-cell-riiight]="cell.dataType === 'number'"
-                            [ngClass]="{ 'col-item-freeze': cell.freeze, 'holding-check': cell.column === dataTableService.firstCol }"
-                            [ngStyle]="{'width': cell.width || dataTableService.useColWid, 'height': row.height}" >{{cell.text}}@if (cell.html){<div class="mock-html"></div>}</div>
+                            <div class="data-cell data-cell-{{common.elifyCol(cell.column)}}" [ngClass]="{ 'data-cell-riiight': cell.dataType === 'number', 'col-item-freeze': cell.freeze }"
+                            [ngStyle]="{'width': cell.width || dataTableService.useColWid, 'height': row.height}">{{cell.text}}@if (cell.html){<div class="mock-html"></div>}</div>
                         } @else {
                             <app-data-cell [cell]="cell" 
                             [rowId]="row.id" 

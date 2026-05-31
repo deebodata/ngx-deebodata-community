@@ -27,6 +27,7 @@ export class DataTableService {
             mapperWorkerId: number = 1;
             dTblHeight: number = 500;
             defltRHgt: string = "50px"
+            defltRHgtNum: number = 50
             isSorting = false;
             isFiltering = false
             themeColor1: any = null

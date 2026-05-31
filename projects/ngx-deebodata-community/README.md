@@ -1,6 +1,9 @@
 # NgxDeebodataCommunity
 
-Angular data grid with virtual scroll, column resizing, cell editing, tab accessibility, row selection, sorting, and filtering.
+Angular data grid with virtual scroll, column resizing, cell editing, tab accessibility, row selection, sorting, and filtering.  
+
+**Live Demos** - https://deebodata.com/data-grid-community or see a demo of virtual scroll with 1.5 million rows using the 
+JavaScript edition at https://deebodata.com/general-docs/row-virtualization
 
 ## Usage
 
@@ -33,7 +36,7 @@ import { NgxDeebodataCommunity } from 'ngx-deebodata-community';
 ></ngx-deebodata-community>
 ```
 
-**Pass valid CSS or hex colors to color1, color2, & altRowColor**  
+Pass valid CSS, rgb, or hex colors to **color1, color2, & altRowColor**  
 
 Always pass a **px** value to defRowHgt like '50px'
 
@@ -77,8 +80,9 @@ handleCellEdit(event: CellEdit) {//executes on cell edit if editable isn't false
     /*CellEdit interface -> { value: any; row: any; column: string; idType: string; valueChanged: boolean; }
     row will either be the 0-based index of the edited cell's parent row in the initial data set
     or, if a primaryKey is passed or detected, it will be the value of that primaryKey for the edited 
-    row. Use idType (will be either "key" or "rowId") to know which one is emitting. Use valueChanged 
-    to know if an edit actually changed the value*/
+    row. Use idType (will be either "key" or "rowId") to know which one is emitting. column is 
+    the column/attribute and value is the real value of the edit, which can be a string, number 
+    or Date. Use valueChanged to know if an edit actually changed the value*/
     // console.log(event)
 }
 ```

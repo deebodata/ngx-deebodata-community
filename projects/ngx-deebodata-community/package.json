@@ -1,7 +1,7 @@
 {
   "name": "ngx-deebodata-community",
   "description": "Angular data grid that solves data analysis problems with virtual scroll, column resizing, cell editing, tab accessibility, sorting, and filtering.",
-  "version": "0.1.6",
+  "version": "0.2.2",
   "peerDependencies": {
     "@angular/common": "^21.2.0",
     "@angular/core": "^21.2.0",
@@ -14,7 +14,7 @@
   },
   "sideEffects": false,
   "license": "MIT",
-  "repository": { "url": "https://github.com/briannick1991/ngx-deebodata-community" },
+  "repository": { "url": "https://github.com/deebodata/ngx-deebodata-community" },
   "homepage": "https://deebodata.com/ngx-deebodata-documentation/ngx-deebodata-community",
-  "keywords": ["grid", "data-grid", "angular", "open-source", "datagrid", "virtual-scroll", "accessibility", "free", "MIT"]
+  "keywords": ["grid", "data-grid", "angular", "datagrid", "sorting", "filtering", "data-table", "virtual-scroll", "table", "accessibility", "MIT", "high-performance"]
 }

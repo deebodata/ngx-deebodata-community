@@ -9,7 +9,7 @@ import { DataTableService } from '../../../services/data-table-service';
   selector: 'app-data-cell',
   imports: [CommonModule],
   templateUrl: './data-cell.html',
-  styleUrl: '../../../styles.css',
+  styleUrls: ['./data-cell.css', '../../../styles.css']
 })
 export class DataCellComponent {
 
