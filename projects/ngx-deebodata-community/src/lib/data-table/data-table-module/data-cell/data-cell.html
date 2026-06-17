@@ -3,4 +3,5 @@
 (mousemove)="tblDragService.checkItemBorderCursor($event, noColResize)" (mousemove)="tblDragService.handleCellSizeAdjust($event, elCol)"
 (mousedown)="tblDragService.handleCellSizeAdjust($event, elCol)" (focus)="setCellToEdit()" (blur)="emitEdit($event)"
 [attr.data-index]="rowId" (dblclick)="handleColResDblClick(cell.column)" (keydown.tab)="checkNeedsSroll()"
+[textContent]="text" [innerHTML]="html"
 ></div>

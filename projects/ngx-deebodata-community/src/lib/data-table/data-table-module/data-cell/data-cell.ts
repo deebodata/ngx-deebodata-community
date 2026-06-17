@@ -1,14 +1,16 @@
-import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, signal, SimpleChanges, ViewChild } from '@angular/core';
 import { DataCell } from '../../../interfaces/data-cell';
 import { CommonService } from '../../../services/common-service';
 import { TableDragService } from '../../../services/table-drag-service';
 import { CommonModule } from '@angular/common';
 import { DataTableService } from '../../../services/data-table-service';
+import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-data-cell',
   imports: [CommonModule],
   templateUrl: './data-cell.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./data-cell.css', '../../../styles.css']
 })
 export class DataCellComponent {
@@ -27,6 +29,8 @@ export class DataCellComponent {
   inlineLink = false;
   scrollOnTab: boolean = false;
   setCellEditScrlActionTO: any = null;
+  @Input() text: string = "";
+  @Input() html: string = "";
   @Input() rawText: any;
   @Input() cell!: DataCell;
   @Input() rowId: string = "";//starts with dataTableRow
@@ -51,6 +55,8 @@ export class DataCellComponent {
         if(this.cell.visible && !this.ready)
           this.handleSettingText()
       }
+      if(this.cell.visible && (changes["cell"] || changes["text"] || changes["html"]))
+        this.handleSettingText()
     }
   }
 
@@ -86,11 +92,11 @@ export class DataCellComponent {
     }
   }
 
-  handleSettingText() {
+  handleSettingText(force?: boolean) {
       if(this.cell.text || (this.cell.html && !/<img/g.test(this.cell.html)))
-        return this.setCellText()
+        return this.setCellText(force)
       if(this.cell.html)
-        setTimeout( () => { this.setCellText() }, 100)
+        timer(100).subscribe( () => { this.setCellText(force) })
   }
 
   isLastCellInRow(): boolean {
@@ -100,18 +106,22 @@ export class DataCellComponent {
     return this.scrollOnTab
   }
 
-  setCellText() {
+  setCellText(force?: boolean) {
     const cell = this.cellElem.nativeElement
-    if(this.cell.text && !cell.textContent)
-      cell.textContent = this.cell.text
-    if(this.cell.html && !cell.innerHTML){
-      cell.innerHTML = this.cell.html
-      if(/ \<a/g.test(this.cell.html) || /a\> /g.test(this.cell.html))
+    if(this.text && (!cell.textContent || force)){
+      cell.textContent = this.text
+      cell.style.removeProperty("display")
+    }
+    if(this.html && (!cell.innerHTML || force)){
+      cell.innerHTML = this.html
+      if(/ \<a/g.test(this.html) || /a\> /g.test(this.html))
         cell.style.display = "inline-block"
+      else
+        cell.style.removeProperty("display")
     }
     this.ready = true
-    if(this.cell.html){
-      setTimeout( () => {
+    if(this.html && !this.ready){
+      timer(0).subscribe( () => {
         const ancOIm = (document.querySelector("#" + this.rowId + " .data-cell-" + this.elCol + " a") || 
         document.querySelector("#" + this.rowId + " .data-cell-" + this.elCol + " img"))
         if(ancOIm){
@@ -169,15 +179,16 @@ export class DataCellComponent {
   }
 
   setToEditAfterTO() {
-      this.setCellEditScrlActionTO = setTimeout( () => {
+      this.setCellEditScrlActionTO = timer(100).subscribe( () => {
         if(this.dataTableService.currEditCol === this.cell.column)
           this.setCellToEdit(true)
-      }, 100)
+        timer(0).subscribe( () => {this.dataTableService.autoScrollOnEdit = false; })
+      })
   }
 
   setCellToEdit(noHScrl?: boolean) {
-      if(this.tblDragService.didResizeOnEvent || !this.cell.editable){
-          if(!this.cell.editable){
+      if(this.tblDragService.didResizeOnEvent || this.dataTableService.lockCellFocus() || !this.cell.editable){
+          if(!this.cell.editable && !this.dataTableService.lockCellFocus()){
             this.dataTableService.clearAllFocused()
             this.dataTableService.clearDCellFcsd()
             this.clearVEditFocus.emit("")
@@ -191,6 +202,8 @@ export class DataCellComponent {
       this.dataTableService.currEditCol = this.cell.column
       this.dataTableService.currEditIndex = parseInt(this.rowId.replace(/^dataTableRow/, ""))
       const cell = this.cellElem.nativeElement
+      if(!this.canEdit && !this.cell.html)
+        this.dataTableService.lockCellFocus.set(true);
       const cellWid = parseInt(this.dataTableService.useColWid?.replace(/px/g, "") || "250")
       if(cell.getBoundingClientRect().right+cellWid >= this.dataTableService.tblRight){
           if(!noHScrl){
@@ -207,7 +220,7 @@ export class DataCellComponent {
       this.dataTableService.clearAllFocused()
       this.dataTableService.clearDCellFcsd()
       this.setCellEditScrlActionTO = null;
-      setTimeout( () => this.dataTableService.autoScrollOnEdit = false)
+      timer(0).subscribe( () => {this.dataTableService.autoScrollOnEdit = false })
       if(this.needsVal()){
         const okText = this.validateRawText(this.cell.rawText, this.cell.dataType)
         if(this.cell.rawText && !okText)
@@ -216,7 +229,7 @@ export class DataCellComponent {
         return;
       }
       this.clearVEditFocus.emit("")
-      setTimeout( () => {
+      timer(0).subscribe( () => {
         const fCellDragger = <HTMLElement>document.getElementsByClassName("focused-cell-dragger")[0]
         const par = fCellDragger?.parentElement
         if(fCellDragger && par){

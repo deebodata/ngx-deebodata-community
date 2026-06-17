@@ -14,7 +14,8 @@ export class TableDragService {
   
             currDataRow: any;
             currColForDataRow: any;
-            dTblHeight: number = 500;
+            handleTblHtTO: any = null
+            tblHgtDiff: number = 0;
             currColumnEdit: string = ""
             listenForMouseUp: boolean = false;
             listenForSelectStart: boolean = false;
@@ -155,6 +156,7 @@ export class TableDragService {
                             if(rootCol){
                                 this.dataTableService.currColumnEdit =rootCol
                                 this.colDragStartFrmCellTracker = { col: rootCol, row: null, xstart: useX, ystart:null, resized: false }
+                                this.dataTableService.listenForScroll.set(false)
                                 this.listenForMouseUp = true
                             }
                         }
@@ -167,6 +169,7 @@ export class TableDragService {
                           this.currDataRow = document.getElementById(col.getAttribute("data-index"))
                         }
                         this.colDragStartFrmCellTracker = { col: null, row: this.currDataRow, xstart: null, ystart: e.offsetY, resized: false }
+                        this.dataTableService.listenForScroll.set(false)
                         this.listenForMouseUp = true
                     }
                 }
@@ -247,9 +250,11 @@ export class TableDragService {
                     let max = 1000
                     if(isNaN(max))
                         max = 700;
-                    const tblWant = Math.min((this.dTblHeight + useHgt), max);
-                    this.dTblHeight = Math.floor(Math.max(tblWant, 100))
-                    this.dTblHeightOutput.next(this.dTblHeight)
+                    const tblWant = Math.min((this.dataTableService.dTblHeight() + useHgt), max);
+                    const finalHgt = Math.floor(Math.max(tblWant, 100))
+                    this.tblHgtDiff += (finalHgt-this.dataTableService.dTblHeight());
+                    this.dataTableService.dTblHeight.set(finalHgt);
+                    this.dTblHeightOutput.next(finalHgt)
                 }catch(err){}
             }
 

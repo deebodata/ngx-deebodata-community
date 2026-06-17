@@ -37,8 +37,8 @@
     </div>
     <div [ngClass]="{'row-numbers': rowNumbers, 'hide': !rowNumbers}" >
         <div #rowNumHeader class="row-num-header flex-center"><div class="semi-heavy">No.</div></div>
-        <div style="overflow: hidden;" [style.height]="dataTableService.dTblHeight + 'px'">
-            <div #rowNumBody style="overflow: auto">
+        <div style="overflow: hidden;" [style.height]="dataTableService.dTblHeight() + 'px'">
+            <div [ngStyle]="{'overflow': 'auto', 'marginTop': rnBTop() + 'px' }">
                 @for (num of rowNos; track num.number) {
                     <div [id]="'rn' + num.number" class="flex-center num-row" [style.height]="num.height || dataTableService.defltRHgt">
                         <div class="small-text">{{num.number | number}}</div>
@@ -62,20 +62,19 @@
                 ></app-data-table-header>
             }
         </div>
-        <div #dataTableBody id="dataTableBody" style="overflow: auto;" [style.height]="dataTableService.dTblHeight + 'px'" (scroll)="handleScroll($event)"
+        <div #dataTableBody id="dataTableBody" style="overflow: auto;" [style.height]="dataTableService.dTblHeight() + 'px'" (scroll)="handleScroll($event)"
         [class.table-working]="dataTableService.isFiltering || dataTableService.isSorting" (scrollend)="handleScrollEnd()">
-            <div #aboveArea [style.height]="aboveHgt() + 'px'"></div>
-            @for(row of rows; track row.index){
-                <div [id]="row.id" class="data-table-row" [attr.data-index]="row.index"
-                [class.data-row-selected]="!dataTableService.displayOnlySelRows && dataTableService.currSelRows.indexOf(row.index) > -1"
-                 [ngStyle]="{'width': row.width, 'height': row.height}" >
-                    @for(cell of row.cells; track cell.column){
-                        @if (isScrolling){
-                            <div class="data-cell data-cell-{{common.elifyCol(cell.column)}}" [ngClass]="{ 'data-cell-riiight': cell.dataType === 'number', 'col-item-freeze': cell.freeze }"
-                            [ngStyle]="{'width': cell.width || dataTableService.useColWid, 'height': row.height}">{{cell.text}}@if (cell.html){<div class="mock-html"></div>}</div>
-                        } @else {
+            <div #aboveArea [ngStyle]="{'height': aboveHgt() + 'px', 'width': useRowWid}"></div>
+            <div [style.transform]="'translateY('+transY()+'px)'">
+                @for(row of rows; track $index){
+                    <div [id]="row.id" class="data-table-row" [attr.data-index]="row.index"
+                    [class.data-row-selected]="!dataTableService.displayOnlySelRows && dataTableService.currSelRows.indexOf(row.index) > -1"
+                        [ngStyle]="{'width': row.width, 'height': row.height}" >
+                        @for(cell of row.cells; track cell.column){
                             <app-data-cell [cell]="cell" 
                             [rowId]="row.id" 
+                            [text]="cell.text || ''"
+                            [html]="cell.html || ''"
                             [rawText]="cell.rawText"
                             [rowHeight]="row.height || ''"
                             (edit)="execCellEdit($event)"
@@ -87,12 +86,12 @@
                             (validateEditFocus)="handleValidatedCellEditFocus($event)"
                             ></app-data-cell>
                         }
-                    }
-                </div>
-            }
-            <div #belowArea [style.height]="belowHgt() + 'px'"></div>
+                    </div>
+                }
+            </div>
+            <div #belowArea [ngStyle]="{'height': belowHgt() + 'px', 'width': useRowWid}"></div>
             @if(!dataTableService.currFilData.length){
-                <div [style.height]="dataTableService.dTblHeight + 'px'" class="data-table-row flex-center data-table-row-no-data" style="width: 100%; white-space: normal;">
+                <div [style.height]="dataTableService.dTblHeight() + 'px'" class="data-table-row flex-center data-table-row-no-data" style="width: 100%; white-space: normal;">
                     <div class="center">{{dataTableService.noDataMsg}}</div>
                 </div>
             }

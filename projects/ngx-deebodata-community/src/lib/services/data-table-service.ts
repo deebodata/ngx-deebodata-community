@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { CommonService } from './common-service';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { ColumnSymbol } from '../interfaces/column-symbol';
 
@@ -25,7 +24,9 @@ export class DataTableService {
             currFilData: any[] = []
             currMapping: any = {}
             mapperWorkerId: number = 1;
-            dTblHeight: number = 500;
+            dTblHeight = signal<number>(500);
+            listenForScroll = signal<boolean>(true)
+            lockCellFocus = signal<boolean>(false);
             defltRHgt: string = "50px"
             defltRHgtNum: number = 50
             isSorting = false;

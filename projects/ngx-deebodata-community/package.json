@@ -1,7 +1,7 @@
 {
   "name": "ngx-deebodata-community",
   "description": "Angular data grid that solves data analysis problems with virtual scroll, column resizing, cell editing, tab accessibility, sorting, and filtering.",
-  "version": "0.2.2",
+  "version": "0.2.6",
   "peerDependencies": {
     "@angular/common": "^21.2.0",
     "@angular/core": "^21.2.0",

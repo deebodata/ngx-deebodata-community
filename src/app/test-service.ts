@@ -11,7 +11,7 @@ export class TestService {
   }
 
   getData() {
-    return this.http.get("https://d2ffvluimla00s.cloudfront.net/stim_imgs_comm.json")
+    return this.http.get("https://d2ffvluimla00s.cloudfront.net/senators.json")
   }
   
 }
