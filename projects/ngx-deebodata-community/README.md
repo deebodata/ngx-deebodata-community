@@ -36,6 +36,23 @@ import { NgxDeebodataCommunity } from 'ngx-deebodata-community';
 ></ngx-deebodata-community>
 ```
 
+**Component Input API**
+
+| Input | Type | Default | Description
+|----------|----------|----------|----------|
+| `editable` | `boolean`  | `true`   | Allows cells to be edited   |
+| `rowNumbers` | `boolean`   | `true`   | Show row numbers on left hand side of grid   |
+| `data` | `signal<any[]>`   | `[]`   | signal Array of objects to display   |
+| `color1` | `string`   | `""`   | Theme color 1 (css, hex, rgb)   |
+| `color2` | `string`   | `""`   | Theme color 2 (css, hex, rgb)   |
+| `primaryKey` | `string`   | `""`   | primary key of your data set, helps performance to add it   |
+| `defRowHgt` | `string`   | `50px`   | default row height (px)   |
+| `defGridHgt` | `number`   | `500`   | default grid height in px   |
+| `altRowColor` | `string`   | `""`   | alternate row color (css, hex, rgb)   |
+-  
+
+
+
 Pass valid CSS, rgb, or hex colors to **color1, color2, & altRowColor**  
 
 Always pass a **px** value to defRowHgt like '50px'

@@ -964,7 +964,6 @@ export class NgxDeebodataCommunity {
             const lfs = this.dataTableService.listenForScroll()
             this.execVertScrollUp(this.columnNames, this.columnNames.length, dtb.scrollTop, true)
             this.execHorizScroll(dtb.scrollLeft)
-            this.handleScrollEnd()
             if(lfs && this.rows.some( r => r.height !== this.dataTableService.defltRHgt))
                 this.setAllRowsDefHgt()
             if(!lfs)
@@ -992,7 +991,7 @@ export class NgxDeebodataCommunity {
             this.clearValidatedEdit()
           if(this.finishScrollTO)
               this.finishScrollTO.unsubscribe()
-          this.finishScrollTO = timer(150).subscribe( () => { this.completeScroll() })  
+          this.finishScrollTO = timer(100).subscribe( () => { this.completeScroll() })  
         }
 
         execHorizScroll(left: number) {
@@ -1155,7 +1154,7 @@ export class NgxDeebodataCommunity {
         }
     }
 
-    applyToDomRows(rows: any[], cols: string[], colLen: number, lastVisInd: number, dir: string, defNum: number, newRows: number) {
+    applyToDomRows(rows: any[], cols: string[], colLen: number, lastVisInd: number, dir: string, defNum: number, newRows: number, force?: boolean) {
         const len = this.rows.length
         let nrowsAcctFor = 0
         let chks: number[] = []
@@ -1234,7 +1233,7 @@ export class NgxDeebodataCommunity {
             if(bhToAdd)
                 this.belowHgt.set((this.belowHgt() + bhToAdd))
         }
-        this.finishApplyingDomRows(newRows)
+        this.finishApplyingDomRows(newRows, force)
     }
 
     getLastRowBot(): number {
@@ -1253,7 +1252,7 @@ export class NgxDeebodataCommunity {
             const doRows = (!this.isScrolling && (gap == 0 || !this.mouseIsDown)) || currTop%this.doRowsMod === 0;
             const bel = this.belowArea.nativeElement
             const bbds = bel.getBoundingClientRect()
-            const btop = bbds.top
+            const btop = bbds.top - gap
             const defNum = this.dataTableService.defltRHgtNum
             let z = this.lastElRowIndex + 1
             let bhToSub = 0
@@ -1311,7 +1310,7 @@ export class NgxDeebodataCommunity {
             let rows = []
             const ael = this.aboveArea.nativeElement
             const abds = ael.getBoundingClientRect()
-            const rbot = abds.bottom;
+            const rbot = abds.bottom + gap;
             const defNum = this.dataTableService.defltRHgtNum
             let z = (this.lastElRowIndex - maxRows)
             let bhToAdd = 0
@@ -1352,15 +1351,17 @@ export class NgxDeebodataCommunity {
             }
             const vlen = this.dataTableService.visibleCols.length
             const lastVisInd = cols.indexOf(this.dataTableService.visibleCols[(vlen-1)]) + 1;
-            this.applyToDomRows(rows, cols, colLen, lastVisInd, "up", defNum, repl)
+            this.applyToDomRows(rows, cols, colLen, lastVisInd, "up", defNum, repl, force)
         })
     }
 
-    finishApplyingDomRows(newRows: number) {
+    finishApplyingDomRows(newRows: number, force?: boolean) {
         this.setRowNumbers()
         this.fixRowContainer(0)
         this.setLastRowIndex()
         this.cleanRowChecks()
+        if(force)
+            this.handleScrollEnd()
     }
 
     handleValidatedCellEditFocus(cellData: any) {//{type: this.cell.dataType, value: this.cell.rawText}
