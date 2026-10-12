@@ -1360,7 +1360,7 @@ export class NgxDeebodataCommunity {
         this.fixRowContainer(0)
         this.setLastRowIndex()
         this.cleanRowChecks()
-        if(force)
+        if(force && !this.isScrolling)
             this.handleScrollEnd()
     }
 
@@ -1715,7 +1715,7 @@ export class NgxDeebodataCommunity {
             this.columnHeaders.forEach( c => {c.height = useHgt})
             if(this.rowNumbers && this.rowNumHeader)
                 this.rowNumHeader.nativeElement.style.height = useHgt;
-            setTimeout( () => { this.setRowSelChecksPlacement() })
+            setTimeout( () => { this.dataTableService.setTblVertBounds(); this.setRowSelChecksPlacement() })
         }
 
        setSingleRowHgt(val: any, row?: any, force?: boolean) {
