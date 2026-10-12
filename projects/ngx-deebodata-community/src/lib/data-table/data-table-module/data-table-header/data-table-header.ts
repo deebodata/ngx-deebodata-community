@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { ColumnHeader } from '../../../interfaces/column-header';
 import { CommonService } from '../../../services/common-service';
 import { DataTableService } from '../../../services/data-table-service';
@@ -15,6 +15,7 @@ export interface columnWidthResize{
   selector: 'app-data-table-header',
   imports: [CommonModule, FormsModule, DecimalPipe, ],
   templateUrl: './data-table-header.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./data-table-header.css', '../../../styles.css']
 })
 export class DataTableHeader {

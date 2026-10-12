@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, input, Input, Output, signal, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, input, Input, Output, signal, SimpleChanges, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ColumnHeader } from '../../../interfaces/column-header';
 import { CommonService } from '../../../services/common-service';
 import { TableDragService } from '../../../services/table-drag-service';
@@ -26,6 +26,7 @@ import { timer } from 'rxjs';
     DecimalPipe,
   ],
   templateUrl: './ngx-deebodata-community-component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./ngx-deebodata-community-component.css', '../../../styles.css']
 })
 export class NgxDeebodataCommunity {
@@ -353,6 +354,7 @@ export class NgxDeebodataCommunity {
                     this.belowHgt.set((this.belowHgt() + bhToAdd));
             }
             setTimeout( () => { 
+                this.dataTableService.setTblVertBounds()
                 this.dataTableService.listenForScroll.set(true) 
                 this.setRowNumbers(); 
                 this.tblDragService.tblHgtDiff = 0; 

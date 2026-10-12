@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CellEdit, ColumnSymbol, NgxDeebodataCommunity } from 'ngx-deebodata-community';
 import { TestService } from './test-service';
 
@@ -7,6 +7,7 @@ import { TestService } from './test-service';
   selector: 'app-root',
   imports: [ NgxDeebodataCommunity ],
   templateUrl: './app.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.css'
 })
 export class App {

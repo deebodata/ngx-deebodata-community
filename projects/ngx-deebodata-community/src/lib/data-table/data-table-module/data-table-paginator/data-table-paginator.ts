@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, SimpleChanges, } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { DataTableService } from '../../../services/data-table-service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,6 +9,7 @@ import { CommonService } from '../../../services/common-service';
   selector: 'app-data-table-paginator',
   imports: [CommonModule, FormsModule,],
   templateUrl: './data-table-paginator.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./data-table-paginator.css', '../../../styles.css']
 })
 export class DataTablePaginator {
