@@ -29,7 +29,7 @@
     "@angular/forms": "^22.2.2",
     "@angular/platform-browser": "^22.2.2",
     "@angular/router": "^22.2.2",
-    "ngx-deebodata-community": "^0.3.1",
+    "ngx-deebodata-community": "^0.3.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "^0.16.0"

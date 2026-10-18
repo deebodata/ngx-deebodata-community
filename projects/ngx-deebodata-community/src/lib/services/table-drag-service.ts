@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataTableService } from './data-table-service';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { CommonService } from './common-service';
 
 @Injectable({
@@ -14,7 +14,7 @@ export class TableDragService {
   
             currDataRow: any;
             currColForDataRow: any;
-            handleTblHtTO: any = null
+            handleTblHtTO: Subscription|null = null
             tblHgtDiff: number = 0;
             currColumnEdit: string = ""
             listenForMouseUp: boolean = false;
@@ -253,7 +253,7 @@ export class TableDragService {
                     const tblWant = Math.min((this.dataTableService.dTblHeight() + useHgt), max);
                     const finalHgt = Math.floor(Math.max(tblWant, 100))
                     this.tblHgtDiff += (finalHgt-this.dataTableService.dTblHeight());
-                    this.dataTableService.dTblHeight.set(finalHgt);
+                    // this.dataTableService.dTblHeight.set(finalHgt);
                     this.dTblHeightOutput.next(finalHgt)
                 }catch(err){}
             }
