@@ -10,16 +10,14 @@
         <button [disabled]="!topLevelFilter && dataTableService.arefilSrtTrkPropsDefault()" 
         class="btn-reset" (click)="resetCurrentData()" >Reset</button>
     </div>
-    @if (!isScrolling){
-        <div class="relly" [ngClass]="{'dt-checks': rowNumbers, 'hide' : dataTableService.isFiltering || 
-        dataTableService.isSorting }">
-            @for (chk of dtChecks; track $index) {
-                <input [id]="'checkDataTableRow' + chk" class="select-row-check invisible" 
-                [checked]="dataTableService.currSelRows.indexOf(chk) > -1" type="checkbox" [name]="'checkDataTableRow' + chk"
-                (click)="toggleSingleRowSelected(chk)" (keyup.enter)="toggleSingleRowSelected(chk)" [value]="'dataTableRow' + chk" >
-            }
-        </div>
-    }
+    <div class="relly" [ngClass]="{'dt-checks': rowNumbers, 'hide' : dataTableService.isFiltering || 
+    dataTableService.isSorting }">
+        @for (chk of dtChecks; track $index) {
+            <input [id]="'checkDataTableRow' + chk" class="select-row-check invisible" 
+            [checked]="dataTableService.currSelRows.indexOf(chk) > -1" type="checkbox" [name]="'checkDataTableRow' + chk"
+            (click)="toggleSingleRowSelected(chk)" (keyup.enter)="toggleSingleRowSelected(chk)" [value]="'dataTableRow' + chk" >
+        }
+    </div>
     <div #validatedEdit class="relly special-edit-container invisible">
         @if (validatedEditType === 'date'){
             <input id="selEditDate" name="selEditDate" type="date" class="edit-input" 
